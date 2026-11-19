@@ -28,35 +28,35 @@ def normalize_label(label):
     raise ValueError("알 수 없는 라벨입니다: {!r}".format(label))
 
 
-def validate_matrix(matrix, expected_size=None, name="배열"):
+def validate_matrix(matrix, expected_size=None, name="배열"): # maxrix: 검사할 배열, expect~: 기대하는 배열크기, name: 오류 메시지에 표시할 이름
     """2차원 숫자 배열이 정사각형인지, 값이 유효한지 검사한다."""
-    if not isinstance(matrix, list) or not matrix:
-        raise ValueError("{}: 비어 있거나 배열 형식이 아닙니다.".format(name))
+    if not isinstance(matrix, list) or not matrix:   # 배열이 있는지 확인. **isinstance: matrix가 리스트인지 확인하는 키워드, **2차원 배열은 리스트 속 리스트 형태임. 
+        raise ValueError("{}: 비어 있거나 배열 형식이 아닙니다.".format(name)) # raise는 의도적으로 에러를 발생시키는 키워드
 
-    size = len(matrix)
-    if expected_size is not None and size != expected_size:
+    size = len(matrix) # len은 리스트의 길이
+    if expected_size is not None and size != expected_size:  # matrix와 기대 사이즈가 다를 때 발생하는 오류
         raise ValueError("{}: 행 크기가 {}이지만 기대 크기는 {}입니다.".format(name, size, expected_size))
 
     for row_index, row in enumerate(matrix):
-        if not isinstance(row, list) or len(row) != size:
+        if not isinstance(row, list) or len(row) != size:   # row행이 리스트가 아니거나, 행의 길이가 사이즈와 다를 경우
             raise ValueError("{}: {}번째 행의 열 개수가 올바르지 않습니다.".format(name, row_index + 1))
-        for col_index, value in enumerate(row):
-            if isinstance(value, bool) or not isinstance(value, (int, float)):
+        for col_index, value in enumerate(row):     # 
+            if isinstance(value, bool) or not isinstance(value, (int, float)):  # 값이 bool이거나, 정수 또는 실수가 아니면 발생
                 raise ValueError("{}: ({}, {}) 위치가 숫자가 아닙니다.".format(name, row_index + 1, col_index + 1))
-            if not math.isfinite(float(value)):
+            if not math.isfinite(float(value)):    # math.isfinite: 값이 유한한지? not이기 때문에 값이 무한하면 발생.
                 raise ValueError("{}: 무한대 또는 NaN은 사용할 수 없습니다.".format(name))
     return size
 
 
-def mac(pattern, filter_matrix): 
-    """두 배열의 같은 위치 값을 곱한 뒤 모두 더한다. (Multiply-Accumulate)"""
-    size = validate_matrix(pattern, name="입력 패턴")  
+def mac(pattern, filter_matrix):  # pattern : 입력 배열, filter_~ : 필터 배열
+    """두 배열의 같은 위치 값을 곱한 뒤 모두 더한다. (Multiply-Accumulate)"""  
+    size = validate_matrix(pattern, name="입력 패턴")  # validate_matrix 함수를 이용해 배열이 정상인지 확인
     validate_matrix(filter_matrix, expected_size=size, name="필터")    
 
-    total = 0.0
+    total = 0.0                        # 계산 결과를 위한 total, 아직 아무것도 계산하지 않았기 때문에 0.0 으로.
     for row in range(size):            # row 행
         for col in range(size):        # col 열
-            total += float(pattern[row][col]) * float(filter_matrix[row][col])
+            total += float(pattern[row][col]) * float(filter_matrix[row][col]) # float는 숫자를 실수로 변환. 입력배열(행,열) * 필터배열(행,열)의 값을 for로 반복해서 더함.
     return total
 
 
