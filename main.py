@@ -18,14 +18,14 @@ EPSILON = 1e-9
 REPEAT_COUNT = 10
 
 
-def normalize_label(label):
-    """입력 라벨을 Cross 또는 X로 통일한다."""
-    value = str(label).strip().lower()
-    if value in ("+", "cross"):
-        return "Cross"
-    if value == "x":
+def normalize_label(label):  # 서로 다른 형태의 데이터를 정규화(일정한 규칙으로 통일)하는 함수
+    """입력 라벨을 Cross 또는 X로 통일한다.""" 
+    value = str(label).strip().lower() # 문자열 앞뒤 공백을 제거하고, 소문자로 변환
+    if value in ("+", "cross"):  # in 은 특정값이 뒤의 후보들 중에 포함되어있는지 확인, (괄호안)을 튜플이라고 함. 비교군을 묶어놓은 것.
+        return "Cross"           # "+" 와 "cross"를 "Cross"로 인식
+    if value == "x":   # "x" 를 "X"로 인식
         return "X"
-    raise ValueError("알 수 없는 라벨입니다: {!r}".format(label))
+    raise ValueError("알 수 없는 라벨입니다: {!r}".format(label))  # Cross나 X로 인식할 수 없는 값에 대한 오류 반환.
 
 
 def validate_matrix(matrix, expected_size=None, name="배열"): # maxrix: 검사할 배열, expect~: 기대하는 배열크기, name: 오류 메시지에 표시할 이름
@@ -45,7 +45,7 @@ def validate_matrix(matrix, expected_size=None, name="배열"): # maxrix: 검사
                 raise ValueError("{}: ({}, {}) 위치가 숫자가 아닙니다.".format(name, row_index + 1, col_index + 1))
             if not math.isfinite(float(value)):    # math.isfinite: 값이 유한한지? not이기 때문에 값이 무한하면 발생.
                 raise ValueError("{}: 무한대 또는 NaN은 사용할 수 없습니다.".format(name))
-    return size
+    return size    # 배열을 검토한 뒤 배열의 크기를 반환함
 
 
 def mac(pattern, filter_matrix):  # pattern : 입력 배열, filter_~ : 필터 배열
@@ -60,11 +60,11 @@ def mac(pattern, filter_matrix):  # pattern : 입력 배열, filter_~ : 필터 �
     return total
 
 
-def decide(score_cross, score_x):
+def decide(score_cross, score_x):   # cross와 X필터 값을 비교하여 판정을 내림
     """점수 차이가 epsilon 미만이면 동점으로 판단한다."""
-    if abs(score_cross - score_x) < EPSILON:
+    if abs(score_cross - score_x) < EPSILON:  # cross - x 값을 abs절대값으로 변환, 그 차이가 아주 미세하면 같은 값으로 간주하여 UNDECIDED
         return "UNDECIDED"
-    return "Cross" if score_cross > score_x else "X"
+    return "Cross" if score_cross > score_x else "X"  # cross필터값이 x필터 값보다 크면 Cross, 아니면 X
 
 
 def measure_mac(pattern, filter_matrix, repeat=REPEAT_COUNT):
